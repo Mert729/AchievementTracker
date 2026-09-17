@@ -166,7 +166,7 @@
 										   style="margin: 8px;" />
 
 									<!-- BUZLU CAMIN BAŞLADIĞI YER (Sadece Spoiler ise spoiler-blur class'ı eklenir) -->
-									<div class="d-flex align-items-center @(a.IsSpoiler ? "spoiler-blur" : "")"
+									<div class="d-flex align-items-center @(a.IsSpoiler && !a.IsCompleted ? "spoiler-blur" : "")"
 										 onclick="if($(this).hasClass('spoiler-blur')) { $(this).removeClass('spoiler-blur'); }"
 										 title="@(a.IsSpoiler ? "Spoiler içeriyor! İçeriği görmek için tıklayın." : "")">
 
@@ -257,6 +257,7 @@
 							console.log("Sunucudan cevap geldi:", response);
 							if (response.success) {
 								if (response.isCompleted) {
+									$("#date-" + achievementId).closest('.d-flex').removeClass('spoiler-blur');
 									$("#date-" + achievementId)
 										.html('<i class="bi bi-calendar2-check"></i> @Html.Raw(Localizer["UnlockedAt"].Value) ' + response.unlockDate)
 										.removeClass("text-muted")
@@ -414,6 +415,9 @@
 								// 1. Animasyonu patlat
 								row.addClass('achievement-unlock-anim');
 								setTimeout(function() { row.removeClass('achievement-unlock-anim'); }, 500);
+								
+								$("#date-" + currentId).closest('.spoiler-blur').removeClass('spoiler-blur');
+								setTimeout(function() { row.removeClass('achievement-unlock-anim'); }, 500);
 
 								// 2. Tarihi yaz ve yeşil yap
 								$("#date-" + currentId)
@@ -424,8 +428,12 @@
 								}, delay);
 
 								delay += 50; // Her bir satır için 50 milisaniye aralık (Dalga efekti hızı)
-								fireConfetti();
 							});
+							fireConfetti();
+
+							/*setTimeout(function() {
+								fireConfetti();
+							}, delay + 200);*/
 						} else {
 							$("small[id^='date-']").hide().empty();
 						}
