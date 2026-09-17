@@ -1,0 +1,52 @@
+﻿@{
+    ViewData["Title"] = @Localizer["NavHome"];
+}
+@model List<AchievementTracker.Models.Game>
+
+<div class="container mt-4">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 ultra-wide-4 g-4" id="gamesContainer">
+        @foreach(var game in Model)
+        {
+            <partial name="_GameCardPartial" model="game"/>
+        }
+    </div>
+</div>
+
+<!-- Dinamik Oyun Silme Modalı -->
+<div class="modal fade" id="deleteGameModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-light border-danger shadow-lg">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title text-danger fw-bold">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>@Localizer["DeleteGame"]
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>@Html.Raw(Localizer["ConfirmDeleteGameMsg"].Value)</p>
+                <p class="mb-0 text-muted small">@Localizer["DeleteActionIrreversibleMsg"]</p>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
+                <!-- C#'taki Delete metoduna gidecek olan Form -->
+                <form id="deleteGameForm" method="post" action="/Admin/DeleteGame">
+                    <input type="hidden" name="id" id="deleteGameId" value="" />
+                    <button type="submit" class="btn btn-danger fw-bold">@Localizer["DeletePermanently"] </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function openDeleteModal(gameId) {
+            // Tıklanan oyunun ID'sini formun içindeki gizli inputa yapıştır
+            $('#deleteGameId').val(gameId);
+
+            // Bootstrap Modalı tetikle ve ekranda göster
+            var myModal = new bootstrap.Modal(document.getElementById('deleteGameModal'));
+            myModal.show();
+        }
+    </script>
+}

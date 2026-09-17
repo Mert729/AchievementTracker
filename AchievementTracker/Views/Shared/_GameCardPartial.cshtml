@@ -1,0 +1,78 @@
+﻿@model Game
+@{
+    bool is100Percent = Model.IsCompleted;
+
+    // Sayfadan özel olarak 'true' gönderilmediyse rozetleri GİZLE (varsayılan false)
+    bool showDetails = ViewData["ShowCompletionDetails"] as bool? ?? false;
+
+    string epicCardClass = (is100Percent && showDetails) ? "game-card-epic dm-white" : "";
+    string epicBadgeClass = is100Percent ? "badge-shine" : "";
+}
+<div class="col">
+    <div class="card h-100 game-card border @epicCardClass">
+
+        <div class="row g-0 h-100">
+            <!-- Sol Taraf: Oyun Kapak Görseli (Hover Efektli Konteyner)  style="width: 120px; height: 100%; object-fit: cover; object-position: center;"-->
+            <div class="col-md-4 game-cover-container overflow-hidden" style="min-height: 160px">
+                <img src="@Model.CoverImageUrl"
+                     class="img-fluid rounded-start h-100 w-100"
+                     style="object-fit: cover;"
+                     alt="@Model.Name">
+                     <!--onerror="this.onerror=null; this.src='/images/default-cover.jpg';">(Eklenecek)-->
+
+                <!-- Sadece Kapak Üzerine Gelince Çıkan Gizli Admin Menüsü -->
+                <div class="game-cover-overlay rounded-start">
+                    <a asp-controller="Admin" asp-action="EditGame" asp-route-id="@Model.Id" class="btn btn-info btn-sm fw-bold px-3 shadow-sm" style="width: 80%;">
+                        <i class="bi bi-pencil me-1"></i> @Localizer["EditGame"]
+                    </a>
+                    <button type="button" onclick="openDeleteModal(@Model.Id)" class="btn btn-danger btn-sm fw-bold px-3 shadow-sm" style="width: 80%;">
+                        <i class="bi bi-trash me-1"></i> @Localizer["DeleteGame"]
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sağ Taraf: Kart İçeriği (Tertemiz ve Minimal) -->
+            <div class="col-md-8">
+                <div class="card-body p-2 d-flex flex-column h-100 text-start">
+
+                    <!-- Başlık ve Yıldızı Yan Yana Tutan Alan -->
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                        <!-- Oyun Başlığı -->
+                        <h5 class="card-title fw-bold mb-0 pe-2"
+                            style="min-height: 48px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;"
+                            title="@Model.Name">
+                            @Model.Name
+                        </h5>
+
+                        <!-- Favori Butonu -->
+                        <button class="btn btn-sm text-warning toggle-favorite-btn p-0 border-0 flex-shrink-0" data-game-id="@Model.Id" title="Favorilere Ekle/Çıkar">
+                            <i class="bi @(Model.IsFavorite ? "bi-star-fill" : "bi-star") fs-5"></i>
+                        </button>
+                    </div>
+
+                    <!-- ===== SADECE %100 İSE GÖZÜKEN ROZET VE TARİH ===== -->
+                    @if (is100Percent && showDetails)
+                    {
+                        <div class="mb-1">
+                            <!-- epicBadgeClass buraya yerleşti -->
+                            <span class="badge bg-success @epicBadgeClass px-2 py-1">
+                                <i class="bi bi-check-circle-fill"></i> @Localizer["Completed100"]
+                            </span>
+                        </div>
+
+                        <small class="text-muted d-block mb-2" style="font-size: 0.75rem;">
+                            <i class="bi bi-calendar-check"></i> @Localizer["CompletionDate"]:
+                            <span>@(Model.CompletionDate.HasValue? Model.CompletionDate.Value.ToString("dd.MM.yyyy") : "")</span>
+                        </small>
+                    }
+                    <!-- ======================================================================= -->
+                    <!-- Alt Kısım: İncelmiş Orijinal Buton -->
+                    <a asp-controller="Home" asp-action="Achievements" asp-route-id="@Model.Id" class="btn btn-show-achievements btn-sm mt-auto py-1">
+                        @Localizer["ViewAchievements"]
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

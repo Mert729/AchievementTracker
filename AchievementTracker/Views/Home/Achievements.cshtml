@@ -1,0 +1,460 @@
+﻿@model Game;
+@{
+	bool isAllUnlocked = Model.Achievements.Any() && Model.Achievements.All(a => a.IsCompleted);
+}
+@{
+	<div class="container mt-4">
+		<a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-sm mb-3">
+			Back to Games
+		</a>
+
+		<div class="row">
+			<div class="col-md-4">
+				<div class="card shadow-sm">
+					<img src="@Model.CoverImageUrl" class="card-img-top" alt="@Model.Name">
+					<div class="card-body">
+						<p class="mb-1"><strong>@Localizer["GameName"]: </strong>@Model.Name</p>
+						<p class="mb-1"><strong>@Localizer["Platform"]: </strong>@Model.Platform</p>
+						<p class="mb-1"><strong>@Localizer["Release Date"]: </strong>@Model.ReleaseDate.ToString("yyyy-MM-dd")</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="dm-cyan col-md-8">
+				<div class="d-flex justify-content-between align-items-center mb-3">
+					<h3 class="fw-bold mb-0">@Localizer["Achievements"]</h3>
+
+					<!-- Rehbere Götüren Buton -->
+					<a asp-controller="Home" asp-action="Guide" asp-route-id="@Model.Id" class="btn">
+						<i class="bi bi-book me-2"></i>@Localizer["ViewGuide"]
+					</a>
+				</div>
+
+				<!-- Kupa ve Etiket İstatistik Panosu -->
+				<div class="card shadow-lg mb-4 border-secondary">
+					<div class="card-body">
+						<h4 class="card-title text-warning mb-4 border-bottom border-secondary pb-2">
+							🏆 @Localizer["AchievementSummary"]
+						</h4>
+
+						<div class="row text-center">
+							<!-- Sol Taraf: Kupa Dağılımı -->
+							<div class="col-md-6 border-end border-secondary mb-4 mb-md-0">
+								<h6 class="text-muted text-uppercase mb-3 text-center">@Localizer["TrophyDistribution"]</h6>
+
+								<!-- Esnek Flexbox Yapısı: Ekrana sığmazsa kelimeyi bölmez, bloğu komple alta atar -->
+								<div class="d-flex flex-wrap justify-content-center justify-content-md-start gap-5 align-items-center">
+
+									<!-- Hikaye (1) -->
+									<div class="text-center">
+										<span class="fs-4 fw-bold text-primary">@Model.Achievements.Count(a => a.TrophyTierId == 1)</span><br />
+										<!-- text-nowrap harflerin dikey kopmasını engeller -->
+										<small class="text-primary text-nowrap">@Localizer["TagStory"]</small>
+									</div>
+
+									<!-- Bronz (2) -->
+									<div class="text-center">
+										<span class="fs-4 fw-bold" style="color: #cd7f32;">@Model.Achievements.Count(a => a.TrophyTierId == 2)</span><br />
+										<small style="color: #cd7f32;" class="text-nowrap">@Localizer["TagBronze"]</small>
+									</div>
+
+									<!-- Gümüş (3) -->
+									<div class="text-center">
+										<span class="fs-4 fw-bold text-light">@Model.Achievements.Count(a => a.TrophyTierId == 3)</span><br />
+										<small style="color: #c0c0c0;" class="text-nowrap">@Localizer["TagSilver"]</small>
+									</div>
+
+									<!-- Altın (4) -->
+									<div class="text-center">
+										<span class="fs-4 fw-bold text-warning">@Model.Achievements.Count(a => a.TrophyTierId == 4)</span><br />
+										<small class="text-warning text-nowrap">@Localizer["TagGold"]</small>
+									</div>
+
+									<!-- Grind (5) -->
+									<div class="text-center">
+										<span class="fs-4 fw-bold" style="color: #9b59b6;">@Model.Achievements.Count(a => a.TrophyTierId == 5)</span><br />
+										<small style="color: #9b59b6;" class="text-nowrap">@Localizer["TagGrind"]</small>
+									</div>
+
+								</div>
+							</div>
+
+							<!-- Sağ Taraf: Öne Çıkan Etiketler -->
+							<div class="col-md-6 mt-4 mt-md-0">
+								<h6 class="text-muted text-uppercase mb-3">@Localizer["FeaturedTags"]</h6>
+								<div class="d-flex flex-wrap justify-content-center gap-2">
+									<!-- Dinamik Etiket Sayımları (SelectMany ile Köprü Tablosundan Çekiyoruz) -->
+									<span class="badge bg-primary fs-6 py-2 px-3">
+										@Localizer["TagStory"]: @Model.Achievements.SelectMany(a => a.AchievementTags).Count(t => t.Tag.Name == "Hikaye")
+									</span>
+									<span class="badge bg-danger fs-6 py-2 px-3">
+										@Localizer["TagMissable"]: @Model.Achievements.SelectMany(a => a.AchievementTags).Count(t => t.Tag.Name == "Kaçırılabilir")
+									</span>
+									<span class="badge bg-success fs-6 py-2 px-3">
+										@Localizer["TagCollectible"]: @Model.Achievements.SelectMany(a => a.AchievementTags).Count(t => t.Tag.Name == "Toplanabilir")
+									</span>
+									<span class="badge fs-6 py-2 px-3" style="background-color: #9b59b6; color: white;">
+										@Localizer["TagGrind"]: @Model.Achievements.SelectMany(a => a.AchievementTags).Count(t => t.Tag.Name == "Grind")
+									</span>
+									<span class="badge bg-secondary fs-6 py-2 px-3">
+										@Localizer["TagChapterSpecific"]: @Model.Achievements.SelectMany(a => a.AchievementTags).Count(t => t.Tag.Name == "Bölüme Özel")
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- FİLTRELEME / SIRALAMA BUTONLARI -->
+				<div class="d-flex justify-content-end mb-4">
+					<div class="btn-group shadow-sm" role="group" aria-label="Sıralama Seçenekleri">
+
+						<!-- Zorluğa Göre Butonu (Varsayılan veya zorluk seçiliyse aktif kalır) -->
+						<button id="btn-zorluk" onclick="sortAchievements('zorluk')" class="btn btn-outline-info active">
+							<i class="bi bi-sort-numeric-down"></i> @Localizer["SortByDifficulty"]
+						</button>
+
+						<!-- Alfabetik Butonu (Alfabetik seçiliyse aktif kalır) -->
+						<button id="btn-alfabetik" onclick="sortAchievements('alfabetik')" class="btn btn-outline-info">
+							<i class="bi bi-sort-alpha-down"></i> @Localizer["SortAlphabetical"]
+						</button>
+
+					</div>
+				</div>	
+
+				<!-- Başarım Arama Çubuğu -->
+				<div class="row mb-4">
+					<div class="col-md-12">
+						<div class="input-group shadow-sm">
+							<span class="input-group-text bg-dark text-info border-secondary">
+								<i class="bi bi-search"></i>
+							</span>
+							<input type="text" id="achievementSearch" class="form-control border-secondary" placeholder="@Localizer["SearchAchievement"]" autocomplete="off">
+						</div>
+					</div>
+				</div>
+
+				<!-- MASTER CHECKBOX (TÜMÜNÜ AÇ/KİLİTLE) -->
+				<div class="row mb-3">
+					<div class="col-md-12">
+						<div class="d-flex justify-content-between align-items-center p-3 border border-secondary rounded shadow-sm">
+							<!-- Başlık -->
+							<h5 class="mb-0"><i class="bi bi-ui-checks-grid text-info me-2"></i>@Localizer["AchievementsList"]</h5>
+
+							<div class="form-check form-switch fs-5 mb-0">
+								<input class="form-check-input" type="checkbox" id="masterCheckbox" data-game-id="@Model.Id" @(isAllUnlocked ? "checked" : "")>
+								<!-- Etiket (Label) -->
+								<label class="form-check-label text-muted" for="masterCheckbox" id="masterLabel">@Localizer["UnlockAllAchievements"]</label>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				@if (Model.Achievements != null && Model.Achievements.Any())
+				{
+					<div id="achievement-container" class="list-group shadow-sm achievement-list">
+						@foreach (var a in Model.Achievements)
+						{
+							<div data-isim="@a.Name" data-zorluk="@a.TrophyTierId" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3 achievement-row achievement-item">
+								<!-- Sol Taraf: Checkbox ve Kare Görsel -->
+								<div class="d-flex align-items-center">
+
+									<!-- Premium Checkbox -->
+									<input type="checkbox" class="form-check-input achievement-checkbox"
+										   data-id="@a.Id"
+										   @(a.IsCompleted ? "checked" : "")
+										   style="margin: 8px;" />
+
+									<!-- BUZLU CAMIN BAŞLADIĞI YER (Sadece Spoiler ise spoiler-blur class'ı eklenir) -->
+									<div class="d-flex align-items-center @(a.IsSpoiler ? "spoiler-blur" : "")"
+										 onclick="if($(this).hasClass('spoiler-blur')) { $(this).removeClass('spoiler-blur'); }"
+										 title="@(a.IsSpoiler ? "Spoiler içeriyor! İçeriği görmek için tıklayın." : "")">
+
+										<!-- Başarıma Özel Kare Görsel -->
+										<span class="achievement-img-placeholder rounded me-3 d-flex justify-content-center align-items-center">
+											<i class="bi bi-image text-muted fs-4"></i>
+										</span>
+
+										<!-- Başarım Adı ve Açıklaması -->
+										<div>
+											<h5 class="fw-bold mb-1 achievement-title">@a.Name</h5>
+											<p class="mb-0 text-muted achievement-desc">@a.Description</p>
+											<!-- Kupanın Açılma Tarihi -->
+											@if (a.UnlockDate.HasValue)
+											{
+												<small class="text-success d-block mt-2 fw-semibold" id="date-@a.Id">
+													<i class="bi bi-calendar2-check"></i> Kilit Açıldı: @a.UnlockDate.Value.ToString("dd.MM.yyyy")
+												</small>
+											}
+											else
+											{
+												// Kupa henüz kilitliyse tarih kısmı gizli/boş duracak
+												<small class="text-muted d-block mt-2" id="date-@a.Id" style="display: none;">
+												</small>
+											}
+										</div>
+
+									</div>
+								</div>
+
+								<!-- Sağ Taraf: Zorluk (Tier) İkonu/Rozeti -->
+								<!-- Sınıf ismine dinamik olarak tier değerini veriyoruz ki CSS ile boyayalım (Örn: tier-1) -->
+								<span class="achievement-tier ms-3">
+									<img src="~/TrophyIcons/@(a.Game?.IconFolderName)/tier-@((int)a.TrophyTierId).png"
+										 onerror="this.onerror=null; this.src='/TrophyIcons/base/tier-@((int)a.TrophyTierId).png';"
+										 alt="@(a.Game?.Name) Trophy Icon"
+										 class="trophy-rectangular" />
+								</span>
+							</div>
+						}
+					</div>
+				}
+				else
+				{
+					<div class="alert alert-warning" role="alert">@Localizer["GameWithoutAchievements"]</div>
+				}
+			</div>
+		</div>
+	</div>
+}
+
+@section Scripts {
+	<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+	<script>
+		$(document).ready(function () {
+			console.log("DOM yüklendi, script çalışıyor!");
+
+			// ==========================================
+			// 1. KISIM: BAŞARIM TİKLAMA (AJAX) İŞLEMİ
+			// ==========================================
+			$(document).on('change', '.achievement-checkbox', function () {
+				console.log("Checkbox tetiklendi!");
+				var checkbox = $(this);
+				var achievementId = checkbox.data('id');
+
+				var totalCount = $('.achievement-checkbox').length;
+				var checkedCount = $('.achievement-checkbox:checked').length;
+				var masterLabel = $('#masterLabel');
+				var masterCheckbox = $('#masterCheckbox');
+
+				var isUnchecking = !checkbox.is(':checked');
+				var was100Percent = (totalCount === checkedCount + 1);
+
+				function runAchievementAjax() {
+					if (totalCount === $('.achievement-checkbox:checked').length) {
+						masterCheckbox.prop('checked', true);
+						masterLabel.text("@Html.Raw(Localizer["LockAchievements"].Value)").removeClass('text-muted').addClass('text-warning');
+					} else {
+						masterCheckbox.prop('checked', false);
+						masterLabel.text("@Html.Raw(Localizer["UnlockAllAchievements"].Value)").removeClass('text-warning').addClass('text-muted');
+					}
+
+					$.ajax({
+						url: '/Home/ToggleAchievement',
+						type: 'POST',
+						data: { id: achievementId },
+						success: function (response) {
+							console.log("Sunucudan cevap geldi:", response);
+							if (response.success) {
+								if (response.isCompleted) {
+									$("#date-" + achievementId)
+										.html('<i class="bi bi-calendar2-check"></i> @Html.Raw(Localizer["UnlockedAt"].Value) ' + response.unlockDate)
+										.removeClass("text-muted")
+										.addClass("text-success fw-semibold")
+										.show();
+									// Animasyonu tetikle ve 500ms sonra sınıfı temizle
+									var achievementRow = $("#date-" + achievementId).closest('.achievement-row');
+									achievementRow.addClass('achievement-unlock-anim');
+									setTimeout(function() { achievementRow.removeClass('achievement-unlock-anim'); }, 500);
+									// OYUN %100 OLDU MU KONTROLÜ (Sadece hepsi bittiyse konfeti patlar)
+									if ($('.achievement-checkbox:checked').length === totalCount) {
+										fireConfetti();
+									}
+								} else {
+									$("#date-" + achievementId).hide().empty();
+								}
+							} else {
+								alert("@Html.Raw(Localizer["OperationFailed"].Value) " + response.message);
+								checkbox.prop('checked', !checkbox.prop('checked'));
+							}
+						},
+						error: function () {
+							alert("@Html.Raw(Localizer["ServerUnreachable"].Value)");
+							checkbox.prop('checked', !checkbox.prop('checked'));
+						}
+					});
+				}
+
+				if (isUnchecking && was100Percent) {
+					Swal.fire({
+						title: '@Html.Raw(Localizer["SealBreakTitle"].Value)',
+						icon: 'warning',
+						showCancelButton: true,
+						confirmButtonColor: '#d33',
+						cancelButtonColor: '#3085d6',
+						confirmButtonText: '<i class="bi bi-unlock-fill"></i> @Html.Raw(Localizer["YesBreakIt"].Value)',
+						cancelButtonText: '@Html.Raw(Localizer["Cancel"].Value)',
+						background: '#212529',
+						color: '#fff'
+					}).then((result) => {
+						if (result.isConfirmed) {
+							runAchievementAjax();
+						} else {
+							checkbox.prop('checked', true);
+						}
+					});
+				} else {
+					runAchievementAjax();
+				}
+			});
+
+			// =============================================
+			// 2. KISIM: DİNAMİK BAŞARIM ARAMA (FİLTRELEME)
+			// =============================================
+			$('#achievementSearch').on('keyup', function () {
+				var searchText = $(this).val().toLocaleLowerCase('tr-TR');
+
+				$('.achievement-row').each(function () {
+					var row = $(this);
+					var title = row.find('.achievement-title').text().toLocaleLowerCase('tr-TR');
+					var desc = row.find('.achievement-desc').text().toLocaleLowerCase('tr-TR');
+
+					if (title.includes(searchText) || desc.includes(searchText)) {
+						row.removeClass('d-none').addClass('d-flex');
+					} else {
+						row.removeClass('d-flex').addClass('d-none');
+					}
+				});
+			});
+		});
+
+		// =======================================================
+		// 3. KISIM: ANLIK BAŞARIM SIRALAMA (ZORLUK VE ALFABETİK)
+		// =======================================================
+		function sortAchievements(kriter) {
+			var container = document.getElementById("achievement-container");
+			var items = Array.from(container.getElementsByClassName("achievement-item"));
+
+			items.sort(function(a, b) {
+				if (kriter === 'alfabetik') {
+					var isimA = a.getAttribute("data-isim").toLowerCase();
+					var isimB = b.getAttribute("data-isim").toLowerCase();
+					return isimA.localeCompare(isimB);
+				} else {
+					var zorlukA = parseInt(a.getAttribute("data-zorluk"));
+					var zorlukB = parseInt(b.getAttribute("data-zorluk"));
+					return zorlukA - zorlukB;
+				}
+			});
+
+			items.forEach(function(item) {
+				container.appendChild(item);
+			});
+
+			if(kriter === 'alfabetik'){
+				document.getElementById("btn-alfabetik").classList.add("active");
+				document.getElementById("btn-zorluk").classList.remove("active");
+			} else {
+				document.getElementById("btn-zorluk").classList.add("active");
+				document.getElementById("btn-alfabetik").classList.remove("active");
+			}
+		}
+
+		// ==========================================
+		// 4. KISIM: MASTER CHECKBOX (TÜMÜNÜ TIKLEME)
+		// ==========================================
+		$('#masterCheckbox').on('change', function () {
+			var isChecked = $(this).is(':checked');
+			var gameId = $(this).data('game-id');
+			var masterLabel = $('#masterLabel');
+			var masterCheck = $(this);
+
+			if (!isChecked) {
+				Swal.fire({
+					title: '@Html.Raw(Localizer["SealBreakTitle"].Value)',
+					icon: 'warning',
+					showCancelButton: true,
+					confirmButtonColor: '#d33',
+					cancelButtonColor: '#3085d6',
+					confirmButtonText: '<i class="bi bi-unlock-fill"></i> @Html.Raw(Localizer["YesReset"].Value)',
+					cancelButtonText: '@Html.Raw(Localizer["Cancel"].Value)',
+					background: '#212529',
+					color: '#fff'
+				}).then((result) => {
+					if (result.isConfirmed) {
+						runMasterAjax(gameId, isChecked, masterLabel, masterCheck);
+					} else {
+						masterCheck.prop('checked', true);
+					}
+				});
+			} else {
+				runMasterAjax(gameId, isChecked, masterLabel, masterCheck);
+			}
+		});
+
+		function runMasterAjax(gameId, isChecked, masterLabel, masterCheckbox) {
+			$('.achievement-checkbox').prop('checked', isChecked);
+			masterLabel.text(isChecked ? "@Html.Raw(Localizer["LockAchievements"].Value)" : "@Html.Raw(Localizer["UnlockAllAchievements"].Value)");
+			masterLabel.toggleClass('text-warning', isChecked).toggleClass('text-muted', !isChecked);
+
+			$.ajax({
+				url: '/Home/ToggleAllAchievements',
+				type: 'POST',
+				data: { gameId: gameId, IsCompleted: isChecked },
+				success: function (response) {
+					console.log("Gelen Cevap: " + response);
+					if (response.success) {
+						if (response.isCompleted) {
+							var delay = 0;
+							$('.achievement-checkbox').each(function () {
+								var currentId = $(this).data('id');
+								var row = $(this).closest('.achievement-row');
+
+								setTimeout(function () {
+								// 1. Animasyonu patlat
+								row.addClass('achievement-unlock-anim');
+								setTimeout(function() { row.removeClass('achievement-unlock-anim'); }, 500);
+
+								// 2. Tarihi yaz ve yeşil yap
+								$("#date-" + currentId)
+								.html('<i class="bi bi-calendar2-check"></i> @Html.Raw(Localizer["UnlockedAt"].Value) ' + response.unlockDate)
+								.removeClass("text-muted")
+								.addClass("text-success fw-semibold")
+								.show();
+								}, delay);
+
+								delay += 50; // Her bir satır için 50 milisaniye aralık (Dalga efekti hızı)
+								fireConfetti();
+							});
+						} else {
+							$("small[id^='date-']").hide().empty();
+						}
+					} else {
+						alert("@Html.Raw(Localizer["OperationFailed"].Value) " + response.message);
+						$('.achievement-checkbox').prop('checked', !isChecked);
+						masterCheckbox.prop('checked', !isChecked);
+					}
+				},
+				error: function () {
+					alert("@Html.Raw(Localizer["ServerUnreachable"].Value)");
+					$('.achievement-checkbox').prop('checked', !isChecked);
+					masterCheckbox.prop('checked', !isChecked);
+				}
+			});
+		}
+
+		// ============================
+		// 5. KISIM: Konfetti Efekti
+		// ============================
+		function fireConfetti() {
+			var duration = 3 * 1000;
+			var end = Date.now() + duration;
+
+			(function frame() {
+				confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0, y: 1 }, colors: ['#ffc107', '#198754', '#ffffff'], zIndex: 9999 });
+				confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1, y: 1 }, colors: ['#ffc107', '#198754', '#ffffff'], zIndex: 9999 });
+				if (Date.now() < end) { requestAnimationFrame(frame); }
+			}());
+		}
+	</script>
+}

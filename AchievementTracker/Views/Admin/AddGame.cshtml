@@ -1,0 +1,33 @@
+﻿@{
+	ViewBag.Title = "Add Game";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="mt-5">
+	<div class="row justify-content-center">
+		<div class="col-md-6">
+			<div class="card shadow-sm">
+				<div class="card-header bg-dark text-white">
+					<h4 class="fw-bold mb-0">@Localizer["AddGame"]</h4>
+				</div>
+				<div class="card-body">
+					<form action="/Admin/AddGame" method="post">
+						<!-- Oyun Adı -->
+						<div class="mb-3">
+							<label class="form-label fw-bold">@Localizer["GameName"]</label>
+							<input type="text" name="Name" class="form-control add-game-input" placeholder="@Localizer["EnterAName"]"/>
+						</div>
+						<!-- Oyun İkon Klasörü -->
+						<div class="mb-3">
+							<label class="form-label fw-bold">@Localizer["IconFolderNameOptional"]</label>
+							<input type="text" name="IconFolderName" class="form-control add-game-input" placeholder="@Localizer["IconFolderPlaceholder"]"/>
+						</div>
+						<button type="submit" class="btn btn-success w-100 fw-bold">
+							@Localizer["SaveGameToDatabase"]<!--İçerik boşsa uyarı verdir!!!!(eklenecek)-->
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

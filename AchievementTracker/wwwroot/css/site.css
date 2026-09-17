@@ -1,0 +1,727 @@
+﻿/*
+    İÇERİKLER
+    1. ADAPTİF NAVBAR RENKLERİ
+    2. ELİPS (PILL) TEMA BUTONU
+    3. OYUN KARTLARI VE BUTON TASARIMLARI
+    4. İKON VE BUTON RENK CİLALARI
+    5. BAŞARIM SATIRLARI (ACHIEVEMENT ROWS)
+    6. SPOİLER KORUMASI (BUZLU CAM EFEKTİ)
+    7. OYUN KARTI HOVER EFEKTİ (ADMİN MENÜSÜ)
+    8. ADD GAME INPUT GÖRÜNÜRLÜĞÜ
+    9. Hall of Fame Sayfası
+    10. Light Mode: Achievements Sayfası
+    11. Light Mode: Başarım Kartları Renk Revizyonu
+    12. DARK MOD için Renk Ayarları
+*/
+
+
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+/* =============================
+   1. ADAPTİF NAVBAR RENKLERİ
+   ============================= */
+
+/* ☀️ LIGHT MOD (Gündüz) için Navbar Rengi */
+[data-bs-theme="light"] body {
+    background-color: #f8f9fa !important;
+}
+
+[data-bs-theme="light"] .game-card {
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
+}
+
+[data-bs-theme="light"] .custom-navbar {
+    background-color: #f8f9fa !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important; /* Gölgeyi belirginleştirdik */
+}
+
+    [data-bs-theme="light"] .custom-navbar .nav-link,
+    [data-bs-theme="light"] .custom-navbar .navbar-brand {
+        color: #2b3035 !important;
+        font-weight: 500;
+    }
+
+        [data-bs-theme="light"] .custom-navbar .navbar-brand i {
+            color: #e67e22 !important;
+        }
+
+/* 🌙 DARK MOD (Gece) için Navbar Rengi */
+[data-bs-theme="dark"] .custom-navbar {
+    background-color: #1a1d21 !important;
+}
+
+    [data-bs-theme="dark"] .custom-navbar .nav-link,
+    [data-bs-theme="dark"] .custom-navbar .navbar-brand {
+        color: #e9ecef !important;
+    }
+
+/* Linklerin üzerine fareyle gelince (Hover) oluşan şık efekt */
+.custom-navbar .nav-link:hover {
+    color: #f39c12 !important;
+    transition: 0.3s ease-in-out;
+}
+
+
+/* =============================
+   2. ELİPS (PILL) TEMA BUTONU
+   =============================*/
+
+.theme-toggle-pill {
+    position: relative;
+    display: inline-block;
+    width: 64px;
+    height: 32px;
+    margin-bottom: 0;
+    cursor: pointer;
+}
+
+    /* Orijinal checkbox'ı tamamen gizliyoruz */
+    .theme-toggle-pill input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+        position: absolute;
+    }
+
+/* Elips Arka Plan */
+.pill-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #2c3e50; /* Karanlık mod arka planı */
+    border-radius: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px;
+    transition: background-color 0.4s ease;
+}
+
+/* İkonlar */
+.moon-icon {
+    color: black;
+    font-size: 14px;
+    z-index: 1;
+}
+
+.sun-icon {
+    color: #f39c12;
+    font-size: 15px;
+    z-index: 1;
+}
+
+/* Kayan Yuvarlak Top */
+.pill-ball {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 26px;
+    height: 26px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: 2;
+}
+
+/* Butona tıklandığında (Güneş / Light Moda geçiş) */
+.theme-toggle-pill input:checked + .pill-slider {
+    background-color: #cbd5e1; /* Light mod arka planı */
+}
+
+/* Butona tıklandığında topun sağa kayması */
+.theme-toggle-pill input:checked + .pill-slider .pill-ball {
+    transform: translateX(32px);
+    background-color: black;
+}
+
+/* =========================================
+   3. OYUN KARTLARI VE BUTON TASARIMLARI
+   ========================================= */
+
+/* Kartların Temel Ayarı (Üzerine gelince hafif havaya kalkma efekti) */
+.game-card {
+    border: none !important;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s ease-in-out;
+}
+
+    .game-card:hover {
+        transform: translateY(-5px); /* Kartın üstüne fareyle gelince tatlıca yükselir */
+    }
+
+/* ☀️ LIGHT MOD: Kartlar Bembeyaz ve belirgin gölgeli */
+[data-bs-theme="light"] .game-card {
+    background-color: #f8f9fa !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08) !important;
+}
+
+/* 🌙 DARK MOD: Gövdeden ayrılan Koyu Gri/Füme Kartlar */
+[data-bs-theme="dark"] .game-card {
+    background-color: #2b3035 !important; /* Simsiyah gövdeden bir tık daha açık füme */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4) !important;
+}
+
+/* --- SHOW ACHIEVEMENTS BUTONU --- */
+.btn-show-achievements {
+    font-weight: 600;
+    border-radius: 8px;
+    width: 100%; /* Kutunun altını tam kaplasın */
+    padding: 10px;
+    transition: all 0.3s;
+    text-align: center;
+    display: inline-block;
+    text-decoration: none;
+}
+
+/* ☀️ LIGHT MOD Buton: Koyu Füme Arka Plan, Beyaz Yazı */
+[data-bs-theme="light"] .btn-show-achievements {
+    background-color: #212529;
+    color: #ffffff !important;
+}
+
+[data-bs-theme="light"] .btn-show-achievements:hover {
+    background-color: #e67e22; /* Kupa rengimize parlar */
+    color: #ffffff !important;
+}
+
+/* 🌙 DARK MOD Buton: Kupa Rengi (Turuncu/Sarı) Arka Plan, Siyah Yazı */
+[data-bs-theme="dark"] .btn-show-achievements {
+    background-color: #e67e22; /* Buton karanlıkta kaybolmasın diye turuncu oldu */
+    color: #1a1d21 !important;
+}
+
+[data-bs-theme="dark"] .btn-show-achievements:hover {
+    background-color: #f39c12;
+}
+
+/* ======================================= */
+/* --- 4. İKON VE BUTON RENK CİLALARI --- */
+/* ======================================= */
+
+/* ☀️ LIGHT MOD: Kartlardaki ve Navbar'daki cırtlak sarıları, daha mat bir Hardal rengine çek */
+[data-bs-theme="light"] .text-warning {
+    color: #d99a00 !important;
+}
+
+/* ☀️ LIGHT MOD: Arama çubuğu içindeki sarı mercek ikonunu da uyumlu hale getir */
+[data-bs-theme="light"] .search-bar-custom .btn {
+    color: #d99a00 !important;
+}
+
+/* =========================================
+   5. BAŞARIM SATIRLARI (ACHIEVEMENT ROWS)
+   ========================================= */
+
+/* Satırın Temel Hali (Kilitli/Alınmamış) */
+.achievement-row {
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    opacity: 0.6; /* Kilitliyken hafif silik durur */
+    border-left: 4px solid transparent !important; /* Sol tarafa şık bir çizgi payı bırakıyoruz */
+}
+
+/* 🌙 DARK MOD: Satır Arka Planı */
+[data-bs-theme="dark"] .achievement-row {
+    background-color: #212529 !important;
+    border-color: #2d3239 !important;
+    color: #e9ecef;
+}
+
+/* ☀️ LIGHT MOD: Satır Arka Planı */
+[data-bs-theme="light"] .achievement-row {
+    background-color: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    color: #343a40;
+}
+
+/* Kare Görsel Alanı (Placeholder) */
+.achievement-img-placeholder {
+    width: 64px;
+    height: 64px;
+    background-color: rgba(128, 128, 128, 0.1);
+    border: 1px solid rgba(128, 128, 128, 0.2);
+}
+
+/* Checkbox Büyütme ve Tasarım */
+.achievement-checkbox {
+    width: 1.5em;
+    height: 1.5em;
+    cursor: pointer;
+}
+
+/* --- TİK ATILDIĞINDA (UNLOCKED) OLACAKLAR --- */
+/* Checkbox işaretlendiğinde, CSS :has() seçicisi ile satırın tamamını parlatıyoruz */
+
+.achievement-row:has(.achievement-checkbox:checked) {
+    opacity: 1; /* Tamamen netleşir */
+    background-color: rgba(230, 126, 34, 0.05) !important; /* Çok hafif kupa rengi bir arka plan atar */
+    border-left: 4px solid #e67e22 !important; /* Sol tarafta kupa renginde (turuncu) kalın bir çizgi belirir */
+}
+
+    /* Tiklendiğinde Başarım Adı parlasın */
+    .achievement-row:has(.achievement-checkbox:checked) .achievement-title {
+        color: #e67e22;
+        transition: color 0.3s;
+    }
+
+
+/* --- ZORLUK (TIER) RENKLERİ --- */
+/* Tier 1 - Hikaye Başarımları (Mavi) */
+.tier-1 .tier-icon {
+    color: #3498db !important;
+}
+/* Tier 2 - Kolay Başarımlar (Bronz) */
+.tier-2 .tier-icon {
+    color: #cd7f32 !important;
+}
+/* Tier 3 - Orta Zorluk (Gümüş) */
+.tier-3 .tier-icon {
+    color: #bdc3c7 !important;
+}
+/* Tier 4 - Zor Başarımlar (Altın Sarısı) */
+.tier-4 .tier-icon {
+    color: #f1c40f !important;
+}
+/* Tier 5 - Kafayı Yedirtecek Zorluk (Mor) */
+.tier-5 .tier-icon {
+    color: #9b59b6 !important;
+}
+
+/* Aydınlık Mod (Light Mode) için Checkbox Kenarlığı */
+.form-check-input {
+    border: 2px solid #6c757d !important; /* Kutucuğa tok ve belirgin bir gri/füme kenarlık atar */
+    box-shadow: none; /* Etrafındaki gereksiz parlamayı siler */
+}
+
+/* Kutucuk işaretlendiğinde (checked) kenarlık rengini temanın rengiyle uyumlu tutmak istersen */
+.form-check-input:checked {
+    border-color: #fd7e14 !important; /* Senin sitenin o turuncu temanı baz aldım */
+    background-color: #fd7e14 !important;
+}
+
+.trophy-rectangular {
+    width: 200px; /* Senin belirlediğin ideal genişlik (150px de yapabilirsin) */
+    aspect-ratio: 16 / 9; /* Fallout resmindeki gibi geniş ekran / dikdörtgen oranı */
+    /* İŞİN SIRRI BURADA */
+    object-fit: contain;
+    object-position: center;
+}
+
+/* Sadece 1600px ve üzeri (Yatay 2K) ekranlarda 4 kolon yap */
+@media (min-width: 1600px) {
+    .ultra-wide-4 > * {
+        flex: 0 0 auto;
+        width: 25%;
+    }
+}
+
+/* ==========================================
+   6. SPOİLER KORUMASI (BUZLU CAM EFEKTİ)
+   ========================================== */
+.spoiler-blur {
+    filter: blur(6px); /* Başarım içeriğini saklayan 6 piksellik buzlu cam */
+    user-select: none; /* Yazıların fareyle yanlışlıkla seçilmesini/okunmasını engeller */
+    cursor: pointer; /* Üzerine gelince el işareti çıkararak tıklanabilir olduğunu belli eder */
+    transition: filter 0.4s ease-in-out; /* Tıklandığında camın yağ gibi pürüzsüz açılmasını sağlar */
+}
+
+    /* Fareyle üzerine gelince buzlu cam hafif incelsin (Oyuncuyu tıklamaya teşvik eder) */
+    .spoiler-blur:hover {
+        filter: blur(4px);
+    }
+
+/* ==========================================
+   7. OYUN KARTI HOVER EFEKTİ (ADMİN MENÜSÜ)
+   ========================================== */
+.game-cover-container {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+}
+
+.game-cover-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.75); /* Yarı saydam siyah arka plan */
+    backdrop-filter: blur(2px); /* Kapağın üzerine hafif buzlu cam efekti */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px; /* Butonlar arası boşluk */
+    opacity: 0; /* Başlangıçta tamamen görünmez */
+    transition: opacity 0.3s ease-in-out; /* Fareyle gelince yağ gibi açılması için */
+}
+
+/* Kapağın üzerine gelindiğinde görünmezliği kaldır */
+.game-cover-container:hover .game-cover-overlay {
+    opacity: 1;
+}
+
+/* --- AKILLI ARAMA ÇUBUĞU (Temaya Duyarlı Sınırlar) --- */
+
+/* LIGHT (BEYAZ) TEMA: Input'un ve Butonun etrafı koyu, kalın ve net bir gri olsun */
+[data-bs-theme="light"] .search-bar-custom .form-control,
+[data-bs-theme="light"] .search-bar-custom .btn {
+    border: 1px solid #6c757d !important; /* Koyu gri (Bootstrap Secondary) */
+}
+/* LIGHT TEMA: Butonun solundaki çizgiyi input'la birleştirmek için kaldır */
+[data-bs-theme="light"] .search-bar-custom .btn {
+    border-left: none !important;
+}
+
+/* DARK (SİYAH) TEMA: Input'un ve Butonun etrafı neon oyuncu sarısı olsun */
+[data-bs-theme="dark"] .search-bar-custom .form-control,
+[data-bs-theme="dark"] .search-bar-custom .btn {
+    border: 1px solid #ffc107 !important; /* Altın sarısı (Bootstrap Warning) */
+}
+/* DARK TEMA: Butonun solundaki çizgiyi input'la birleştirmek için kaldır */
+[data-bs-theme="dark"] .search-bar-custom .btn {
+    border-left: none !important;
+}
+
+/* Her iki temada da tıklandığında (focus) etrafında çıkan çirkin mavi gölgeyi (outline) sil */
+.search-bar-custom .form-control:focus,
+.search-bar-custom .btn:focus {
+    box-shadow: none !important;
+    outline: none !important;
+}
+/* LIGHT TEMA: Butonun (Büyüteç ikonunun) rengi Koyu Gri olsun */
+[data-bs-theme="light"] .search-bar-custom .btn {
+    border-left: none !important;
+    color: #6c757d !important; /* Büyüteç Koyu Gri */
+}
+
+/* DARK TEMA: Butonun (Büyüteç ikonunun) rengi Sarı olsun */
+[data-bs-theme="dark"] .search-bar-custom .btn {
+    border-left: none !important;
+    color: #ffc107 !important; /* Büyüteç Sarı */
+}
+
+/* ======================================= */
+/* --- 8. ADD GAME INPUT GÖRÜNÜRLÜĞÜ --- */
+/* ======================================= */
+
+/* ☀️ LIGHT MOD: Input'un içi beyaz, yazısı siyah, SINIRI net bir koyu gri olsun */
+[data-bs-theme="light"] .add-game-input {
+    background-color: #ffffff !important;
+    color: #212529 !important;
+    border: 1px solid #6c757d !important; 
+}
+
+/* 🌙 DARK MOD: Input'un içi koyu, yazısı beyaz, SINIRI açık gri olsun */
+[data-bs-theme="dark"] .add-game-input {
+    background-color: #2b3035 !important;
+    color: #f8f9fa !important;
+    border: 1px solid #6c757d !important;
+}
+
+/* ☀️ LIGHT MOD: Input'a tıklayınca Mavi (Primary) parlasın */
+[data-bs-theme="light"] .add-game-input:focus {
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+}
+
+/* 🌙 DARK MOD: Input'a tıklayınca Sarı (Warning) parlasın */
+[data-bs-theme="dark"] .add-game-input:focus {
+    border-color: #ffc107 !important;
+    box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25) !important;
+}
+
+/* =========================
+   9. Hall of Fame Sayfası
+   ========================= */
+/* 1. Başlık ve Kart İçi Küçük İkonlar (Takvim vb.) */
+html[data-bs-theme="light"] .text-warning,
+body.light-mode .text-warning,
+html[data-theme="light"] .text-warning {
+    color: #343a40 !important; 
+}
+
+/* 2. Toplam Oyun Rozeti */
+html[data-bs-theme="light"] .dynamic-badge,
+body.light-mode .dynamic-badge,
+html[data-theme="light"] .dynamic-badge {
+    color: black !important;
+}
+
+/* 3. Kart Çerçeveleri */
+html[data-bs-theme="light"] .card.border-warning,
+body.light-mode .card.border-warning,
+html[data-theme="light"] .card.border-warning {
+    border-color: #343a40 !important;
+}
+
+/* 4. "Detayları Gör" Butonu */
+html[data-bs-theme="light"] .btn-outline-warning,
+body.light-mode .btn-outline-warning,
+html[data-theme="light"] .btn-outline-warning {
+    color: #343a40 !important;
+    border-color: #343a40 !important;
+}
+
+html[data-bs-theme="light"] .btn-outline-warning:hover,
+body.light-mode .btn-outline-warning:hover,
+html[data-theme="light"] .btn-outline-warning:hover {
+    background-color: #343a40 !important;
+    color: #ffffff !important;
+}
+
+/* ======================================
+   10. Light Mode: Achievements Sayfası
+   ====================================== */
+
+/* 1. Kapkara Kalan Panelleri (Başarım Özeti, Arama, Toplu Yönetim) Açık Gri Yapma */
+html[data-bs-theme="light"] .bg-dark {
+    background-color: #f8f9fa !important; /* Ferah açık gri */
+    color: #212529 !important; /* İçindeki yazılar okunabilsin diye koyu antrasit */
+    border: 1px solid #dee2e6; /* Hafif bir çerçeve */
+}
+
+/* Koyu arka planda kalan input (arama) alanının içini de aydınlatıyoruz */
+html[data-bs-theme="light"] input.bg-dark {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+}
+
+/* 2. Başarım Listesindeki Cırtlak Turuncu/Sarı Çerçeveleri Ezme */
+html[data-bs-theme="light"] .border-warning {
+    border-color: #adb5bd !important; /* Kibar, mat bir gri */
+}
+
+/* Eğer sol taraftaki kalın çizgi özel bir class ise (örneğin border-start-warning) onu da yakalayalım */
+html[data-bs-theme="light"] .border-start.border-warning {
+    border-left-color: #6c757d !important; /* Sol çizgi biraz daha belirgin koyu gri olsun */
+}
+
+/* Açık Mavi Butonlar ve 4'lü Kare İkon (Info) -> Koyu Antrasit */
+html[data-bs-theme="light"] .btn-info {
+    background-color: #343a40 !important;
+    border-color: #343a40 !important;
+    color: #ffffff !important;
+}
+
+html[data-bs-theme="light"] .btn-outline-info {
+    color: #343a40 !important;
+    border-color: #343a40 !important;
+}
+
+    html[data-bs-theme="light"] .btn-outline-info:hover {
+        background-color: #343a40 !important;
+        color: #ffffff !important;
+    }
+
+html[data-bs-theme="light"] .text-info {
+    color: #343a40 !important;
+}
+
+/* Turuncu Çizgiler ve Switch/Checkbox -> Zümrüt Yeşili (Başarı Hissi) */
+html[data-bs-theme="light"] .border-warning {
+    border-color: #198754 !important;
+}
+
+html[data-bs-theme="light"] .border-start.border-warning {
+    border-left-color: #198754 !important;
+}
+
+html[data-bs-theme="light"] .form-check-input:checked {
+    background-color: #198754 !important;
+    border-color: #198754 !important;
+}
+
+/* Başarım Özeti: Altın ve Gümüş Renklerini Beyaz Fona Uyarlama */
+html[data-bs-theme="light"] .text-secondary,
+html[data-bs-theme="light"] .text-light {
+    color: #6c757d !important; /* Okunabilir şık bir metalik gri */
+}
+
+html[data-bs-theme="light"] .text-warning {
+    color: #d4af37 !important; /* Siyahlaşan altın rengini gerçek altın/hardal tonuna çekiyoruz */
+}
+
+/* 4. Toplu Yönetim ve Checkbox Yazıları */
+html[data-bs-theme="light"] #masterLabel,
+html[data-bs-theme="light"] .form-check-label {
+    color: #212529 !important;
+    font-weight: 500;
+}
+
+/* =================================================
+   11. Light Mode: Başarım Kartları Renk Revizyonu
+   ================================================= */
+
+/* 1. Global sarı rengi (Yıldızlar vb. için) */
+html[data-bs-theme="light"] .text-warning {
+    color: #ffc107 !important;
+}
+
+/* ==================================
+   12. DARK MOD için Renk Ayarları
+   ==================================*/
+/* Eğer başlığa özel bir class atamadıysan, bu class'ı HTML'de başlığa eklemen gerekecek */
+html[data-bs-theme="dark"] .dm-gold,
+html[data-bs-theme="dark"] .dm-gold i {
+    color: #d4af37 !important; /* Klasik, tok bir altın (gold) rengi */
+}
+
+html[data-bs-theme="dark"] .dm-cyan,
+html[data-bs-theme="dark"] .dm-cyan i {
+    color: #03f3fb !important; 
+}
+
+html[data-bs-theme="dark"] .dm-darkCyan,
+html[data-bs-theme="dark"] .dm-darkCyan i {
+    color: darkcyan !important;
+}
+
+html[data-bs-theme="dark"] .dm-white,
+html[data-bs-theme="dark"] .dm-white{
+    color: #ffffff !important;
+}
+
+/* Favoriler sayfasında resim hover overlay'ini kapat */
+.favorites-container .game-cover-overlay,
+.favorites-container .hover-overlay {
+    display: none !important;
+}
+
+/* Çözüm Kutuları (Guide Solution Box) Özel Tasarımı */
+html[data-bs-theme="light"] .guide-solution-box {
+    background-color: #f8f9fa !important; /* Ferah açık gri */
+    border: 1px solid #e9ecef !important; /* Çok silik bir çerçeve */
+    color: #495057 !important;
+    border-radius: 8px; /* Köşeleri yumuşatır */
+    padding: 16px; /* İçeriden nefes aldırır (Senin sorduğun p-3 mantığı) */
+}
+
+html[data-bs-theme="dark"] .guide-solution-box {
+    background-color: #1a1d20 !important; /* Koyu antrasit */
+    border: 1px solid #2d3239 !important;
+    color: #adb5bd !important;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+
+/* ==================================
+   13. Epic Tamamlama Hissiyatı
+   ==================================*/
+/* Kart Hover - Fiziksel Yükselme ve Altın Gölge */
+.game-card-epic {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border: 2px solid #f39c12 !important;
+}
+
+.game-card-epic:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(255, 193, 7, 0.15) !important;
+    border-color: rgba(255, 193, 7, 0.8) !important; /* Hover anında renk şeffaflaşmasın diye 0.4'ü 0.8 yaptım */
+}
+
+/* İçerideki resmin hafifçe büyümesi (Z Derinliği) */
+.game-card-epic img {
+    transition: transform 0.4s ease;
+}
+
+.game-card-epic:hover img {
+    transform: scale(1.04);
+}
+
+/* %100 Rozeti İçin Işık Huzmesi (Shine) ve Nefes Alma (Pulse) Efekti */
+.badge-shine {
+    position: relative;
+    overflow: hidden;
+    animation: pulse-glow 2s infinite alternate;
+}
+
+    /* Rozetin üzerinden geçen beyaz parlama çizgisi */
+    .badge-shine::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 100%);
+        transform: skewX(-25deg);
+        animation: shine-sweep 3s infinite;
+    }
+
+@keyframes pulse-glow {
+    0% {
+        box-shadow: 0 0 4px rgba(25, 135, 84, 0.3);
+    }
+
+    100% {
+        box-shadow: 0 0 12px rgba(25, 135, 84, 0.7);
+    }
+}
+
+@keyframes shine-sweep {
+    0% {
+        left: -100%;
+    }
+
+    20% {
+        left: 200%;
+    }
+
+    100% {
+        left: 200%;
+    }
+    /* Geri kalan sürede bekler, sürekli göz yormaz */
+}
+
+/* Başarım Açılma (Pop & Glow) Animasyonu */
+@keyframes unlock-pop {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(25, 135, 84, 0);
+        background-color: transparent;
+    }
+
+    50% {
+        transform: scale(1.02);
+        box-shadow: 0 4px 15px rgba(25, 135, 84, 0.4);
+        background-color: rgba(25, 135, 84, 0.05);
+        z-index: 10;
+        border-radius: 8px;
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(25, 135, 84, 0);
+        background-color: transparent;
+    }
+}
+
+.achievement-unlock-anim {
+    animation: unlock-pop 0.5s ease-out;
+}

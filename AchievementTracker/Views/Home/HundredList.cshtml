@@ -1,0 +1,55 @@
+﻿@model IEnumerable<AchievementTracker.Models.Game>
+@{
+    ViewData["Title"] = @Localizer["NavList100"];
+}
+
+<div class="favorites-container container mt-4">
+    <div class="row mb-4 align-items-center">
+        <!-- Başlık -->
+        <div class="dm-gold d-flex justify-content-between align-items-center mb-4 border-bottom border-secondary pb-2">
+            <h2 class="mb-0">
+                <i class="bi bi-star-fill me-2"></i>@Localizer["NavList100"]
+            </h2>
+            <span class="dynamic-badge fs-6 px-3 py-2 rounded-pill">
+                <i class="bi bi-controller me-1"></i> 
+                
+                <span id="totalGameCounter">@Localizer["TotalGames", @Model.Count()]</span>
+            </span>
+        </div>
+    </div>
+
+    <!-- BOŞ LİSTE KUTUSU (Eğer modelde oyun varsa başlangıçta 'display:none' ile gizli durur) -->
+    <div id="emptyFavoritesState" class="border-0 text-center mt-5 p-5 shadow-sm rounded-4" style="@(Model.Any() ? "display:none;" : "")">
+        <i class="bi bi-stars display-1 text-muted mb-3 d-block"></i>
+        <h4>@Localizer["NoGamesOnListYet"]</h4>
+        <p class="text-muted mb-4">@Localizer["HowToAddToList"]</p>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-warning">
+            <i class="bi bi-controller me-1"></i> @Localizer["DiscoverGames"]
+        </a>
+    </div>
+
+    <!-- OYUNLAR LİSTESİ (Eğer model boşsa başlangıçta gizli durur) -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 ultra-wide-4 g-4" id="gamesContainer" style="@(!Model.Any() ? "display:none;" : "")">
+        @foreach (var game in Model)
+        {
+            <partial name="_GameCardPartial" model="game" />
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Arama Fonksiyonunu (Filtreleme) -->
+    <script>
+        $(document).ready(function () {
+            $("#gameSearchInput").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+
+                // Artık .game-card-container yerine doğrudan .col'u filtreliyoruz
+                $("#gamesContainer > .col").filter(function () {
+                    var gameTitle = $(this).find('h5.card-title').text().toLowerCase();
+                    $(this).toggle(gameTitle.indexOf(value) > -1);
+                });
+            });
+        });
+    </script>
+}
