@@ -48,8 +48,16 @@ namespace AchievementTracker.Controllers
             selectedGame.Achievements = sortOrder switch
             {
                 "alfabetik" => selectedGame.Achievements.OrderBy(a => a.Name).ToList(),
+                "tarih" => selectedGame.Achievements.OrderByDescending(a => a.IsCompleted)
+                                                    .ThenByDescending(a => a.UnlockDate)
+                                                    .ThenBy(a => a.TrophyTierId)
+                                                    .ToList(),
+
                 "zorluk" => selectedGame.Achievements.OrderBy(a => a.TrophyTierId).ToList(),
-                _ => selectedGame.Achievements.OrderBy(a => a.TrophyTierId).ToList()
+                _ => selectedGame.Achievements.OrderByDescending(a => a.IsCompleted)
+                                                    .ThenByDescending(a => a.UnlockDate)
+                                                    .ThenBy(a => a.TrophyTierId)
+                                                    .ToList(),
             };
 
             ViewData["CurrentSort"] = sortOrder;
@@ -85,7 +93,7 @@ namespace AchievementTracker.Controllers
                 achievement.UnlockDate = null; // Tik kaldýrýldýysa tarihi veritabanýndan sil
             }
 
-            // === YENÝ EKLENEN KISIM: OYUNUN TAMAMLANMA DURUMUNU HESAPLA VE GÜNCELLE ===
+            // === OYUNUN TAMAMLANMA DURUMUNU HESAPLA VE GÜNCELLE ===
             ReCalculateGameCompletion(achievement.Game);
             // ======================================================================
 
@@ -129,7 +137,7 @@ namespace AchievementTracker.Controllers
                     }
                 }
 
-                // === YENÝ EKLENEN KISIM: OYUNUN TAMAMLANMA DURUMUNU HESAPLA VE GÜNCELLE ===
+                // === OYUNUN TAMAMLANMA DURUMUNU HESAPLA VE GÜNCELLE ===
                 ReCalculateGameCompletion(game);
                 // ======================================================================
 

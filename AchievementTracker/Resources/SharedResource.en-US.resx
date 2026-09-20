@@ -225,8 +225,8 @@
   <data name="English" xml:space="preserve">
     <value>English</value>
   </data>
-  <data name="AchievementsList" xml:space="preserve">
-    <value>Achievements List</value>
+  <data name="SpoilerTooltip" xml:space="preserve">
+    <value>Contains spoilers! Click to reveal.</value>
   </data>
   <data name="BackToGames" xml:space="preserve">
     <value>Back to Games</value>
@@ -302,5 +302,8 @@
   </data>
   <data name="ServerUnreachable" xml:space="preserve">
     <value>Cannot reach the server. Check F12 Console.</value>
+  </data>
+  <data name="SortByDate" xml:space="preserve">
+    <value>Unlock Date</value>
   </data>
 </root>

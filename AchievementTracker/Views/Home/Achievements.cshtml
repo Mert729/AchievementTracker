@@ -119,6 +119,11 @@
 							<i class="bi bi-sort-alpha-down"></i> @Localizer["SortAlphabetical"]
 						</button>
 
+						<!-- Tarihe Göre Butonu (En Son Açılanlar) -->
+						<button id="btn-tarih" onclick="sortAchievements('tarih')" class="btn btn-outline-info">
+							<i class="bi bi-clock-history"></i> @Localizer["SortByDate"]
+						</button>
+
 					</div>
 				</div>	
 
@@ -134,12 +139,27 @@
 					</div>
 				</div>
 
+				@{
+					var totalAchievements = Model.Achievements?.Count() ?? 0;
+					var unlockedAchievements = Model.Achievements?.Count(a => a.IsCompleted) ?? 0;
+					int progressPercent = totalAchievements > 0 ? (int)Math.Round((double)unlockedAchievements / totalAchievements * 100) : 0;
+				}
+
 				<!-- MASTER CHECKBOX (TÜMÜNÜ AÇ/KİLİTLE) -->
 				<div class="row mb-3">
 					<div class="col-md-12">
 						<div class="d-flex justify-content-between align-items-center p-3 border border-secondary rounded shadow-sm">
-							<!-- Başlık -->
-							<h5 class="mb-0"><i class="bi bi-ui-checks-grid text-info me-2"></i>@Localizer["AchievementsList"]</h5>
+							<div class="d-flex align-items-center gap-3">
+								<!-- İkon ve Sayaç -->
+								<span class="fw-bold fs-5 dm-cyan">
+									<i class="bi bi-trophy"></i> <span id="unlockedCount">@unlockedAchievements</span> / <span id="totalCount">@totalAchievements</span>
+								</span>
+
+								<!-- Yatay İlerleme Çubuğu -->
+								<div class="progress" style="width: 150px; height: 8px; background-color: #2b3035;">
+									<div id="achievementProgressBar" class="progress-bar dm-cyan" role="progressbar" style="width: @(progressPercent)%;"></div>
+								</div>
+							</div>
 
 							<div class="form-check form-switch fs-5 mb-0">
 								<input class="form-check-input" type="checkbox" id="masterCheckbox" data-game-id="@Model.Id" @(isAllUnlocked ? "checked" : "")>
@@ -155,7 +175,7 @@
 					<div id="achievement-container" class="list-group shadow-sm achievement-list">
 						@foreach (var a in Model.Achievements)
 						{
-							<div data-isim="@a.Name" data-zorluk="@a.TrophyTierId" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3 achievement-row achievement-item">
+							<div data-isim="@a.Name" data-zorluk="@a.TrophyTierId" data-tarih="@(a.UnlockDate.HasValue ? a.UnlockDate.Value.ToString("yyyy-MM-ddTHH:mm:ss") : "0")" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3 achievement-row achievement-item">
 								<!-- Sol Taraf: Checkbox ve Kare Görsel -->
 								<div class="d-flex align-items-center">
 
@@ -166,9 +186,7 @@
 										   style="margin: 8px;" />
 
 									<!-- BUZLU CAMIN BAŞLADIĞI YER (Sadece Spoiler ise spoiler-blur class'ı eklenir) -->
-									<div class="d-flex align-items-center @(a.IsSpoiler && !a.IsCompleted ? "spoiler-blur" : "")"
-										 onclick="if($(this).hasClass('spoiler-blur')) { $(this).removeClass('spoiler-blur'); }"
-										 title="@(a.IsSpoiler ? "Spoiler içeriyor! İçeriği görmek için tıklayın." : "")">
+									<div class="d-flex align-items-center">
 
 										<!-- Başarıma Özel Kare Görsel -->
 										<span class="achievement-img-placeholder rounded me-3 d-flex justify-content-center align-items-center">
@@ -178,7 +196,9 @@
 										<!-- Başarım Adı ve Açıklaması -->
 										<div>
 											<h5 class="fw-bold mb-1 achievement-title">@a.Name</h5>
-											<p class="mb-0 text-muted achievement-desc">@a.Description</p>
+											<p class="mb-0 text-muted achievement-desc @(a.IsSpoiler && !a.IsCompleted ? "spoiler-blur" : "")"
+											   onclick="if($(this).hasClass('spoiler-blur')) { $(this).removeClass('spoiler-blur'); }"
+											   title="@(a.IsSpoiler? Localizer["SpoilerTooltip"].Value : "")">@a.Description</p>
 											<!-- Kupanın Açılma Tarihi -->
 											@if (a.UnlockDate.HasValue)
 											{
@@ -257,7 +277,7 @@
 							console.log("Sunucudan cevap geldi:", response);
 							if (response.success) {
 								if (response.isCompleted) {
-									$("#date-" + achievementId).closest('.d-flex').removeClass('spoiler-blur');
+									$("#date-" + achievementId).siblings('.spoiler-blur').removeClass('spoiler-blur');
 									$("#date-" + achievementId)
 										.html('<i class="bi bi-calendar2-check"></i> @Html.Raw(Localizer["UnlockedAt"].Value) ' + response.unlockDate)
 										.removeClass("text-muted")
@@ -265,6 +285,10 @@
 										.show();
 									// Animasyonu tetikle ve 500ms sonra sınıfı temizle
 									var achievementRow = $("#date-" + achievementId).closest('.achievement-row');
+									
+									//Tıklanan satır en üste çıksın
+									achievementRow.prependTo(achievementRow.parent());
+
 									achievementRow.addClass('achievement-unlock-anim');
 									setTimeout(function() { achievementRow.removeClass('achievement-unlock-anim'); }, 500);
 									// OYUN %100 OLDU MU KONTROLÜ (Sadece hepsi bittiyse konfeti patlar)
@@ -274,6 +298,16 @@
 								} else {
 									$("#date-" + achievementId).hide().empty();
 								}
+								var currentUnlocked = $('.achievement-checkbox:checked').length;
+								var totalAchievements = $('.achievement-checkbox').length;
+
+								// Arayüzdeki "X / Y" metnini anında güncelle
+								$('#unlockedCount').text(currentUnlocked);
+								$('#totalCount').text(totalAchievements); // Eğer toplam sayı sabitse bunu yazmana gerek yok
+
+								// İlerleme çubuğunun genişliğini yüzde olarak hesapla ve doldur
+								var percentage = (currentUnlocked / totalAchievements) * 100;
+								$('#achievementProgressBar').css('width', percentage + '%');
 							} else {
 								alert("@Html.Raw(Localizer["OperationFailed"].Value) " + response.message);
 								checkbox.prop('checked', !checkbox.prop('checked'));
@@ -329,9 +363,9 @@
 			});
 		});
 
-		// =======================================================
-		// 3. KISIM: ANLIK BAŞARIM SIRALAMA (ZORLUK VE ALFABETİK)
-		// =======================================================
+		// ===============================================================
+		// 3. KISIM: ANLIK BAŞARIM SIRALAMA (ZORLUK - ALFABETİK - Tarih)
+		// ===============================================================
 		function sortAchievements(kriter) {
 			var container = document.getElementById("achievement-container");
 			var items = Array.from(container.getElementsByClassName("achievement-item"));
@@ -341,6 +375,16 @@
 					var isimA = a.getAttribute("data-isim").toLowerCase();
 					var isimB = b.getAttribute("data-isim").toLowerCase();
 					return isimA.localeCompare(isimB);
+				} else if(kriter === 'tarih'){
+					var tarihA = a.getAttribute("data-tarih");
+					var tarihB = b.getAttribute("data-tarih");
+
+					// Açılmamış kupaları (0) en alta atmak için geçmiş bir referans tarihi (Epoch) veriyoruz
+					var dateA = tarihA === "0" ? new Date(0) : new Date(tarihA);
+					var dateB = tarihB === "0" ? new Date(0) : new Date(tarihB);
+
+					// En yeni olanın üstte kalması için B'den A'yı çıkarıyoruz
+					return dateB - dateA;
 				} else {
 					var zorlukA = parseInt(a.getAttribute("data-zorluk"));
 					var zorlukB = parseInt(b.getAttribute("data-zorluk"));
@@ -355,9 +399,15 @@
 			if(kriter === 'alfabetik'){
 				document.getElementById("btn-alfabetik").classList.add("active");
 				document.getElementById("btn-zorluk").classList.remove("active");
+				document.getElementById("btn-tarih").classList.remove("active");
+			} else if(kriter === 'tarih'){
+				document.getElementById("btn-tarih").classList.add("active");
+				document.getElementById("btn-alfabetik").classList.remove("active");
+				document.getElementById("btn-zorluk").classList.remove("active");
 			} else {
 				document.getElementById("btn-zorluk").classList.add("active");
 				document.getElementById("btn-alfabetik").classList.remove("active");
+				document.getElementById("btn-tarih").classList.remove("active");
 			}
 		}
 
@@ -416,7 +466,7 @@
 								row.addClass('achievement-unlock-anim');
 								setTimeout(function() { row.removeClass('achievement-unlock-anim'); }, 500);
 								
-								$("#date-" + currentId).closest('.spoiler-blur').removeClass('spoiler-blur');
+								$("#date-" + achievementId).siblings('.spoiler-blur').removeClass('spoiler-blur');
 								setTimeout(function() { row.removeClass('achievement-unlock-anim'); }, 500);
 
 								// 2. Tarihi yaz ve yeşil yap
@@ -437,6 +487,16 @@
 						} else {
 							$("small[id^='date-']").hide().empty();
 						}
+						var currentUnlocked = $('.achievement-checkbox:checked').length;
+						var totalAchievements = $('.achievement-checkbox').length;
+
+						// Arayüzdeki "X / Y" metnini anında güncelle
+						$('#unlockedCount').text(currentUnlocked);
+						$('#totalCount').text(totalAchievements); // Eğer toplam sayı sabitse bunu yazmana gerek yok
+
+						// İlerleme çubuğunun genişliğini yüzde olarak hesapla ve doldur
+						var percentage = (currentUnlocked / totalAchievements) * 100;
+						$('#achievementProgressBar').css('width', percentage + '%');
 					} else {
 						alert("@Html.Raw(Localizer["OperationFailed"].Value) " + response.message);
 						$('.achievement-checkbox').prop('checked', !isChecked);

@@ -285,7 +285,7 @@ namespace AchievementTracker.Models
                 new Game
                 {
                     Name = "Marvel's Spiderman Remastered",
-                    Platform = "Steam|Epic",
+                    Platform = "Steam | Epic Games",
                     ReleaseDate = new DateTime(2026, 08, 20),
                     IconFolderName = "spiderman",
                     UrlName = "",
