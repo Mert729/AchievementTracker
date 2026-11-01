@@ -1,4 +1,5 @@
 using AchievementTracker.Models;
+using AchievementTracker.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,8 @@ builder.Services.AddLocalization(options => options.ResourcesPath = "Resources")
 builder.Services.AddControllersWithViews()
     .AddViewLocalization(Microsoft.AspNetCore.Mvc.Razor.LanguageViewLocationExpanderFormat.Suffix)
     .AddDataAnnotationsLocalization();
+builder.Services.AddScoped<IAchievementService, AchievementService>();
+builder.Services.AddScoped<IGameService, GameService>();
 
 // Uygulamaya veritabaný adresimizi (ConnectionString) ve iletiþim kuracak köprüyü (DbContext) tanýtýyoruz.
 builder.Services.AddDbContext<AchievementTrackerDB>(options =>  options.UseSqlServer
