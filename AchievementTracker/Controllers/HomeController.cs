@@ -45,7 +45,7 @@ namespace AchievementTracker.Controllers
                                              .ThenInclude(at => at.Tag).FirstOrDefault(g => g.Id == Id);
             if (selectedGame == null) return NotFound();
 
-            selectedGame.Achievements = sortOrder switch
+            var sortedAchievements = sortOrder switch
             {
                 "alfabetik" => selectedGame.Achievements.OrderBy(a => a.Name).ToList(),
                 "tarih" => selectedGame.Achievements.OrderByDescending(a => a.IsCompleted)
@@ -53,13 +53,20 @@ namespace AchievementTracker.Controllers
                                                     .ThenBy(a => a.TrophyTierId)
                                                     .ToList(),
 
-                "zorluk" => selectedGame.Achievements.OrderBy(a => a.TrophyTierId).ToList(),
-                _ => selectedGame.Achievements.OrderByDescending(a => a.IsCompleted)
-                                                    .ThenByDescending(a => a.UnlockDate)
-                                                    .ThenBy(a => a.TrophyTierId)
-                                                    .ToList(),
+                "zorluk" => selectedGame.Achievements.OrderBy(a => a.TrophyTierId).ThenBy(a => a.Name).ToList(),
+                _ => selectedGame.Achievements.OrderBy(a => a.TrophyTierId).ThenBy(a => a.Name).ToList(),
+
             };
 
+            selectedGame.Achievements = sortedAchievements;
+
+            var groupedAchievements = sortedAchievements
+                                     .GroupBy(a => string.IsNullOrWhiteSpace(a.DLCName) ? "Base Game" : a.DLCName)
+                                     .OrderBy(g => g.Key == "Base Game" ? 0 : 1)
+                                     .ThenBy(g => g.Key) // DLC'leri de kendi içinde A'dan Z'ye dizer
+                                     .ToDictionary(g => g.Key, g => g.ToList());
+
+            ViewBag.GroupedAchievements = groupedAchievements;
             ViewData["CurrentSort"] = sortOrder;
 
             return View(selectedGame);

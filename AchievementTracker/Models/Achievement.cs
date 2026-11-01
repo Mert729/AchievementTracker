@@ -30,6 +30,7 @@ namespace AchievementTracker.Models
         public bool IsSpoiler { get; set; } = false;
         public int Points { get; set; } //Lider tablosu için tutulacak puan
         public DateTime? UnlockDate { get; set; }
+        public string? DLCName { get; set; }
         
 
         public ICollection<AchievementTag> AchievementTags { get; set; } = new List<AchievementTag>();

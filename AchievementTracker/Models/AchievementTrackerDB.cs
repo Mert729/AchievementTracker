@@ -138,7 +138,7 @@ namespace AchievementTracker.Models
                                 new() { Tag = combatTag },
                                 new() { Tag = missableTag }
                             }
-                        },
+                        }
                     }
                 },
                 new Game
@@ -1312,7 +1312,7 @@ namespace AchievementTracker.Models
                         {
                             Name = "Unacceptable",
                             Description = "Scales of Justice görevini tamamla.",
-                            TrophyTierId = 3,
+                            TrophyTierId = 1,
                             IsHidden = true,
                             IsSpoiler = true,
                             Points = 60,

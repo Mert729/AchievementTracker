@@ -725,3 +725,11 @@ html[data-bs-theme="dark"] .guide-solution-box {
 .achievement-unlock-anim {
     animation: unlock-pop 0.5s ease-out;
 }
+
+.bg-platinum {
+    background-color: #e5e4e2 !important;
+}
+
+.bg-gold-100 {
+    background-color: #ffd700 !important;
+}

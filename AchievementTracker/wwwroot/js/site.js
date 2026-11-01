@@ -29,60 +29,63 @@ document.addEventListener("DOMContentLoaded", function () {
 // ========================================
 // YILDIZ (FAVORİ) BUTONU TIKLANMA İŞLEMİ
 // ========================================
-$(document).on('click', '.toggle-favorite-btn', function (e) {
-    e.preventDefault(); // Butonun sayfayı en üste kaydırmasını engeller
+document.addEventListener("DOMContentLoaded", function () {
+    $(document).on('click', '.toggle-favorite-btn', function (e) {
+        e.preventDefault(); // Butonun sayfayı en üste kaydırmasını engeller
 
-    var btn = $(this);
-    var gameId = btn.data('game-id');
-    var icon = btn.find('i'); // Tıklanan butonun içindeki <i> (yıldız) etiketini yakala
+        var btn = $(this);
+        var gameId = btn.data('game-id');
+        var icon = btn.find('i'); // Tıklanan butonun içindeki <i> (yıldız) etiketini yakala
 
-    $.ajax({
-        url: '/Home/ToggleFavorite',
-        type: 'POST',
-        data: { id: gameId },
-        success: function (response) {
-            if (response.success) {
-                if (response.isFavorite) {
-                    // Yıldıza tıklandı ve Favoriye eklendi: İçi boş yıldızı sil, dolu yıldız (sarı) yap
-                    icon.removeClass('bi-star').addClass('bi-star-fill');
-                    console.log("Oyun %100 listesine eklendi!");
-                } else {
-                    // Yıldıza tekrar tıklandı ve Favoriden çıkarıldı: İçi dolu yıldızı sil, boş yıldız yap
-                    icon.removeClass('bi-star-fill').addClass('bi-star');
-                    console.log("Oyun %100 listesinden çıkarıldı!");
+        $.ajax({
+            url: '/Home/ToggleFavorite',
+            type: 'POST',
+            data: { id: gameId },
+            success: function (response) {
+                if (response.success) {
+                    if (response.isFavorite) {
+                        // Yıldıza tıklandı ve Favoriye eklendi: İçi boş yıldızı sil, dolu yıldız (sarı) yap
+                        icon.removeClass('bi-star').addClass('bi-star-fill');
+                        console.log("Oyun %100 listesine eklendi!");
+                    } else {
+                        // Yıldıza tekrar tıklandı ve Favoriden çıkarıldı: İçi dolu yıldızı sil, boş yıldız yap
+                        icon.removeClass('bi-star-fill').addClass('bi-star');
+                        console.log("Oyun %100 listesinden çıkarıldı!");
 
-                    // 🌟 UX SİHRİ: Favoriler sayfasındaysak ve yıldızı kaldırdıysa...
-                    if (window.location.pathname.toLowerCase().includes("hundredlist")) {
-                        var cardCol = btn.closest('.col'); // Silinen kart
-                        var gamesContainer = $('#gamesContainer'); // Kartların durduğu ana satır
+                        // 🌟 UX SİHRİ: Favoriler sayfasındaysak ve yıldızı kaldırdıysa...
+                        if (window.location.pathname.toLowerCase().includes("hundredlist")) {
+                            var cardCol = btn.closest('.col'); // Silinen kart
+                            var gamesContainer = $('#gamesContainer'); // Kartların durduğu ana satır
 
-                        cardCol.fadeOut(400, function () {
-                            $(this).remove(); // Kartı HTML'den tamamen sil
-                            var counterElement = $('#totalGameCounter');
-                            var currentCount = parseInt(counterElement.text().replace(/[^0-9]/g, ''));
-                            if (!isNaN(currentCount) && currentCount > 0) {
-                                counterElement.text("Toplam Oyun: " + (currentCount - 1));
-                            }
-                            // EĞER SİLİNEN KARTTAN SONRA İÇERİDE HİÇ KART KALMADIYSA:
-                            if (gamesContainer.children('.col').length === 0) {
-                                gamesContainer.hide(); // Boş satırı gizle
-                                $('#emptyFavoritesState').fadeIn(600); // Boş ekran şovunu başlat!
-                            }
-                        });
+                            cardCol.fadeOut(400, function () {
+                                $(this).remove(); // Kartı HTML'den tamamen sil
+                                var counterElement = $('#totalGameCounter');
+                                var currentCount = parseInt(counterElement.text().replace(/[^0-9]/g, ''));
+                                if (!isNaN(currentCount) && currentCount > 0) {
+                                    counterElement.text("Toplam Oyun: " + (currentCount - 1));
+                                }
+                                // EĞER SİLİNEN KARTTAN SONRA İÇERİDE HİÇ KART KALMADIYSA:
+                                if (gamesContainer.children('.col').length === 0) {
+                                    gamesContainer.hide(); // Boş satırı gizle
+                                    $('#emptyFavoritesState').fadeIn(600); // Boş ekran şovunu başlat!
+                                }
+                            });
+                        }
                     }
+                } else {
+                    alert('@Html.Raw(Localizer["OperationFailed"].Value: "' + response.message);
                 }
-            } else {
-                alert('@Html.Raw(Localizer["OperationFailed"].Value: "' + response.message);
+            },
+            error: function () {
+                alert('@Html.Raw(Localizer["ServerUnreachable"].Value)');
             }
-        },
-        error: function () {
-            alert('@Html.Raw(Localizer["ServerUnreachable"].Value)');
-        }
+        });
     });
 });
-// ==========================================
+
+// =============================================
 // AKILLI NAVBAR ARAMA SİSTEMİ (GLOBAL SEARCH)
-// ==========================================
+// =============================================
 $(function () {
     $("#globalSearchInput").on("keyup", function () {
         var value = $(this).val().toLowerCase();
@@ -104,4 +107,44 @@ $(function () {
     });
 });
 
+// ============================
+// İlerleme Çubuğu Güncelleme
+// ============================
+function updateProgressBarColors() {
+    let totalAll = document.querySelectorAll('.achievement-checkbox').length;
+    let completedAll = document.querySelectorAll('.achievement-checkbox:checked').length;
 
+    let baseGroup = document.querySelector('[data-group-name="Base Game"]');
+    let totalBase = 0;
+    let completedBase = 0;
+
+    if (baseGroup) {
+        totalBase = baseGroup.querySelectorAll('.achievement-checkbox').length;
+        completedBase = baseGroup.querySelectorAll('.achievement-checkbox:checked').length;
+    }
+
+    // AJAN BURADA: Tarayıcı sayıları doğru okuyor mu diye konsola yazdırıyoruz
+    console.log("Renk Testi -> Tümü: " + completedAll + "/" + totalAll + " | Base Game: " + completedBase + "/" + totalBase);
+
+    let progressBar = document.getElementById("achievementProgressBar");
+    if (!progressBar) return;
+
+    // 1. Önce eski renkleri ve Bootstrap varsayılan renklerini (mavi, yeşil vb.) siliyoruz
+    progressBar.classList.remove("bg-platinum", "bg-gold-100", "dm-cyan", "bg-primary", "bg-info", "bg-success");
+
+    // 2. Ardından başarımların durumuna göre yeni rengimizi atıyoruz
+    if (totalAll > 0 && completedAll === totalAll) {
+        progressBar.classList.add("bg-gold-100");
+    }
+    else if (totalBase > 0 && completedBase === totalBase) {
+        progressBar.classList.add("bg-platinum");
+    }
+    else {
+        progressBar.classList.add("dm-cyan");
+    }
+}
+
+// Sayfa ilk yüklendiğinde barın rengini hesapla
+document.addEventListener("DOMContentLoaded", function () {
+    updateProgressBarColors();
+});
