@@ -1,7 +1,6 @@
 using AchievementTracker.Models;
 using AchievementTracker.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace AchievementTracker.Controllers
@@ -9,17 +8,14 @@ namespace AchievementTracker.Controllers
     public class HomeController : Controller
     {
         //Veritabaný baðlantýsýný bu Controller içinde güvenle kullanabilmek için oluþturulan gizli köprü.
-        private readonly AchievementTrackerDB _context;
         private readonly ILogger<HomeController> _logger;
         private readonly IAchievementService _achievementService;
         private readonly IGameService _gameService;
 
         //Dependency Injection: Uygulama her açýldýðýnda hazýr bir veritabaný baðlantýsýný içeri davet ediyoruz.
-        public HomeController(ILogger<HomeController> logger, AchievementTrackerDB context, 
-                              IAchievementService achievementService, IGameService gameService)
+        public HomeController(ILogger<HomeController> logger, IAchievementService achievementService, IGameService gameService)
         {
             _logger = logger;
-            _context = context;
             _achievementService = achievementService;
             _gameService = gameService;
         }

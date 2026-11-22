@@ -261,7 +261,7 @@
 			console.log("DOM yüklendi, script çalışıyor!");
 
 			// ==========================================
-			// 1. KISIM: BAŞARIM TİKLAMA (AJAX) İŞLEMİ
+			// 1. KISIM: BAŞARIM TIKLAMA (AJAX) İŞLEMİ
 			// ==========================================
 			$(document).on('change', '.achievement-checkbox', function () {
 				console.log("Checkbox tetiklendi!");
@@ -498,9 +498,9 @@
 								// 1. Animasyonu patlat
 								row.addClass('achievement-unlock-anim');
 								setTimeout(function() { row.removeClass('achievement-unlock-anim'); }, 500);
-								
-								$("#date-" + achievementId).siblings('.spoiler-blur').removeClass('spoiler-blur');
-								setTimeout(function() { row.removeClass('achievement-unlock-anim'); }, 500);
+
+								row.find('.spoiler-blur').removeClass('spoiler-blur');
+								//$("#date-" + currentId).siblings('.spoiler-blur').removeClass('spoiler-blur');
 
 								// 2. Tarihi yaz ve yeşil yap
 								$("#date-" + currentId)
@@ -524,7 +524,10 @@
 						$('#totalCount').text(totalAchievements); // Eğer toplam sayı sabitse bunu yazmana gerek yok
 
 						// İlerleme çubuğunun genişliğini yüzde olarak hesapla ve doldur
-						var percentage = (currentUnlocked / totalAchievements) * 100;
+						var percentage = 0
+						if(totalAchievements > 0){
+							percentage = (currentUnlocked / totalAchievements) * 100;
+						}
 						$('#achievementProgressBar').css('width', percentage + '%');
 						updateProgressBarColors();
 					} else {
