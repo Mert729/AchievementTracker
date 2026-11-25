@@ -37,10 +37,11 @@ document.addEventListener("DOMContentLoaded", function () {
         var gameId = btn.data('game-id');
         var icon = btn.find('i'); // Tıklanan butonun içindeki <i> (yıldız) etiketini yakala
 
+        var antiForgeryToken = $('input[name="__RequestVerificationToken"]').val();
         $.ajax({
             url: '/Home/ToggleFavorite',
             type: 'POST',
-            data: { id: gameId },
+            data: { id: gameId, __RequestVerificationToken: antiForgeryToken },
             success: function (response) {
                 if (response.success) {
                     if (response.isFavorite) {
@@ -58,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             var gamesContainer = $('#gamesContainer'); // Kartların durduğu ana satır
 
                             cardCol.fadeOut(400, function () {
-                                $(this).remove(); // Kartı HTML'den tamamen sil
+                                $(this).remove();
                                 var counterElement = $('#totalGameCounter');
                                 var currentCount = parseInt(counterElement.text().replace(/[^0-9]/g, ''));
                                 if (!isNaN(currentCount) && currentCount > 0) {
@@ -73,11 +74,11 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     }
                 } else {
-                    alert('@Html.Raw(Localizer["OperationFailed"].Value: "' + response.message);
+                    alert("İşlem başarısız: " + (response.message || ""));
                 }
             },
             error: function () {
-                alert('@Html.Raw(Localizer["ServerUnreachable"].Value)');
+                alert("Sunucuya ulaşılamadı.");
             }
         });
     });

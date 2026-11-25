@@ -37,7 +37,13 @@
 
                     <!-- Sol Taraf: Kupa Görseli -->
                     <div class="me-3 flex-shrink-0">
-                        <img src="~/TrophyIcons/@(a.Game?.UrlName)/tier-@((int)a.TrophyTierId).png" alt="@a.Name" class="trophy-rectangular"/>
+                        @{
+                            var folderName = string.IsNullOrWhiteSpace(a.Game?.IconFolderName) ? "base" : a.Game.IconFolderName;
+                        }
+                        <img src="~/TrophyIcons/@(folderName)/tier-@((int)a.TrophyTierId).png"
+                             onerror="this.onerror=null; this.src='/TrophyIcons/base/tier-@((int)a.TrophyTierId).png';"
+                             alt="@(a.Game?.Name) Trophy Icon"
+                             class="trophy-rectangular" />
                     </div>
 
                     <!-- Sağ Taraf: Detaylar ve Çözüm Kutusu -->

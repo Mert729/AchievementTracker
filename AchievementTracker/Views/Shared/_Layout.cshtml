@@ -77,7 +77,9 @@
 
                                 <li><hr class="dropdown-divider border-secondary" /></li>
 
+
                                 <!-- Dil Seçenekleri (Açılır/Kapanır Alt Menü) -->
+                                
                                 <li>
                                     <!-- data-bs-toggle="collapse": Tıklanınca altındaki id="languageCollapse" div'ini açar -->
                                     <a class="dropdown-item d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#languageCollapse" role="button" aria-expanded="false" aria-controls="languageCollapse">
@@ -90,11 +92,13 @@
                                         <!-- Görsel uyum için biraz iç boşluk (padding/margin) ve koyu arkaplan verildi -->
                                         <div class="bg-secondary bg-opacity-25 py-2 mx-2 rounded mt-1">
                                             <form asp-controller="Admin" asp-action="SetLanguage" method="post" class="mb-1">
+                                                @Html.AntiForgeryToken()
                                                 <input type="hidden" name="culture" value="tr-TR" />
                                                 <!-- ps-4 ile yazıyı biraz daha sağdan başlattık ki alt eleman olduğu belli olsun -->
                                                 <button type="submit" class="dropdown-item bg-transparent text-light ps-4">@Localizer["Turkish"]</button>
                                             </form>
                                             <form asp-controller="Admin" asp-action="SetLanguage" method="post">
+                                                @Html.AntiForgeryToken()
                                                 <input type="hidden" name="culture" value="en-US" />
                                                 <button type="submit" class="dropdown-item bg-transparent text-light ps-4">@Localizer["English"]</button>
                                             </form>

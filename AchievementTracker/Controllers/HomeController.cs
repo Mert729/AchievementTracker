@@ -30,9 +30,9 @@ namespace AchievementTracker.Controllers
         }
 
         //Baþarým Sayfasý: Oyunlara baðlý baþarýmlarý ve baþarýmlara baðlý kupa seviyelerini görüntüleme
-        public IActionResult Achievements(int Id, string sortOrder)
+        public IActionResult Achievements(int id, string sortOrder)
         {
-            var data = _achievementService.GetAchievementsPageData(Id, sortOrder);
+            var data = _achievementService.GetAchievementsPageData(id, sortOrder);
 
             if (data.Game == null)
                 return NotFound();
@@ -44,6 +44,7 @@ namespace AchievementTracker.Controllers
             return View(data.Game);
         }
 
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public IActionResult ToggleAchievement(int id)
         {
@@ -56,11 +57,12 @@ namespace AchievementTracker.Controllers
             return Json(new { success = true, isCompleted = result.IsCompleted, unlockDate = result.UnlockDate });
         }
 
+        [ValidateAntiForgeryToken]
         [HttpPost]
-        public IActionResult ToggleAllAchievements(int gameId, bool IsCompleted)
+        public IActionResult ToggleAllAchievements(int gameId, bool isCompleted)
         {
             // Bütün iþi Servis'e kilitledik!
-            var result = _achievementService.ToggleAllAchievements(gameId, IsCompleted);
+            var result = _achievementService.ToggleAllAchievements(gameId, isCompleted);
 
             if (!result.Success)
                 return Json(new { success = false, message = result.Message });
@@ -88,6 +90,7 @@ namespace AchievementTracker.Controllers
         }
 
         //Oyun Favorileme
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public IActionResult ToggleFavorite(int id)
         {

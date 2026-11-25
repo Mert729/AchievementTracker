@@ -62,7 +62,7 @@
 
                         <small class="text-muted d-block mb-2" style="font-size: 0.75rem;">
                             <i class="bi bi-calendar-check"></i> @Localizer["CompletionDate"]:
-                            <span>@(Model.CompletionDate.HasValue? Model.CompletionDate.Value.ToString("dd.MM.yyyy") : "")</span>
+                            <span>@(Model.CompletionDate.HasValue? Model.CompletionDate.Value.ToString("dd.MM.yyyy") : "-")</span>
                         </small>
                     }
                     <!-- ======================================================================= -->

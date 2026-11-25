@@ -9,7 +9,7 @@
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
-
+        
         <!-- Hangi oyunun güncellendiğini anlamamız için gizli Id alanı -->
         @Html.HiddenFor(model => model.Id)
 

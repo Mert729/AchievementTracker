@@ -4,6 +4,7 @@
 }
 @{
 	<div class="container mt-4">
+		@Html.AntiForgeryToken()
 		<a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-sm mb-3">
 			Back to Games
 		</a>
@@ -161,11 +162,14 @@
 								</div>
 							</div>
 
-							<div class="form-check form-switch fs-5 mb-0">
-								<input class="form-check-input" type="checkbox" id="masterCheckbox" data-game-id="@Model.Id" @(isAllUnlocked ? "checked" : "")>
-								<!-- Etiket (Label) -->
-								<label class="form-check-label text-muted" for="masterCheckbox" id="masterLabel">@Localizer["UnlockAllAchievements"]</label>
-							</div>
+							@if(totalAchievements > 0){
+								<div class="form-check form-switch fs-5 mb-0">
+									<input class="form-check-input" type="checkbox" id="masterCheckbox" data-game-id="@Model.Id" @(isAllUnlocked ? "checked" : "")>
+									<!-- Etiket (Label) -->
+									<label class="form-check-label text-muted" for="masterCheckbox" id="masterLabel">@Localizer["UnlockAllAchievements"]</label>
+								</div>
+							}
+							
 						</div>
 					</div>
 				</div>
@@ -258,6 +262,7 @@
 	<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 	<script>
 		$(document).ready(function () {
+			var antiForgeryToken = $('input[name="__RequestVerificationToken"]').val();
 			console.log("DOM yüklendi, script çalışıyor!");
 
 			// ==========================================
@@ -288,7 +293,10 @@
 					$.ajax({
 						url: '/Home/ToggleAchievement',
 						type: 'POST',
-						data: { id: achievementId },
+						data: { 
+							id: achievementId,
+							__RequestVerificationToken: antiForgeryToken
+						},
 						success: function (response) {
 							console.log("Sunucudan cevap geldi:", response);
 							if (response.success) {
@@ -480,11 +488,12 @@
 			$('.achievement-checkbox').prop('checked', isChecked);
 			masterLabel.text(isChecked ? "@Html.Raw(Localizer["LockAchievements"].Value)" : "@Html.Raw(Localizer["UnlockAllAchievements"].Value)");
 			masterLabel.toggleClass('text-warning', isChecked).toggleClass('text-muted', !isChecked);
-
+			
+			var antiForgeryToken = $('input[name="__RequestVerificationToken"]').val();
 			$.ajax({
 				url: '/Home/ToggleAllAchievements',
 				type: 'POST',
-				data: { gameId: gameId, IsCompleted: isChecked },
+				data: { gameId: gameId, IsCompleted: isChecked, __RequestVerificationToken: antiForgeryToken },
 				success: function (response) {
 					console.log("Gelen Cevap: " + response);
 					if (response.success) {

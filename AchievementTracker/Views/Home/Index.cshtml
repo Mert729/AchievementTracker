@@ -12,6 +12,7 @@
     </div>
 </div>
 
+
 <!-- Dinamik Oyun Silme Modalı -->
 <div class="modal fade" id="deleteGameModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -30,6 +31,7 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
                 <!-- C#'taki Delete metoduna gidecek olan Form -->
                 <form id="deleteGameForm" method="post" action="/Admin/DeleteGame">
+                    @Html.AntiForgeryToken()
                     <input type="hidden" name="id" id="deleteGameId" value="" />
                     <button type="submit" class="btn btn-danger fw-bold">@Localizer["DeletePermanently"] </button>
                 </form>

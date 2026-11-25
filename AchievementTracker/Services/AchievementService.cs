@@ -30,12 +30,12 @@ namespace AchievementTracker.Services
             achievement.IsCompleted = !achievement.IsCompleted;
             bool isCompleted = achievement.IsCompleted;
 
-            achievement.UnlockDate = isCompleted ? DateTime.Now : null;
+            achievement.UnlockDate = isCompleted ? DateTime.UtcNow : null;
 
             ReCalculateGameCompletion(achievement.Game);
             _context.SaveChanges();
 
-            return (true, "Başarılı", isCompleted, isCompleted ? DateTime.Now.ToString("dd.MM.yyyy") : null);
+            return (true, "Başarılı", isCompleted, isCompleted ? DateTime.UtcNow.ToString("dd.MM.yyyy") : null);
         }
 
         //Master CheckBox
@@ -53,17 +53,17 @@ namespace AchievementTracker.Services
                 foreach (var achievement in game.Achievements)
                 {
                     achievement.IsCompleted = isCompleted;
-                    achievement.UnlockDate = isCompleted ? DateTime.Now : null;
+                    achievement.UnlockDate = isCompleted ? DateTime.UtcNow : null;
                 }
 
                 ReCalculateGameCompletion(game);
                 _context.SaveChanges();
 
-                return (true, "Başarılı", isCompleted, isCompleted ? DateTime.Now.ToString("dd.MM.yyyy") : null);
+                return (true, "Başarılı", isCompleted, isCompleted ? DateTime.UtcNow.ToString("dd.MM.yyyy") : null);
             }
             catch (Exception ex)
             {
-                return (false, $"Hata oluştu: {ex.Message}", false, null);
+                return (false, "Başarımlar güncellenirken bir hata oluştu.", false, null);
             }
         }
 
@@ -84,7 +84,7 @@ namespace AchievementTracker.Services
         //Başarımları Çekme ve Başarım Sıralama işlemleri
         public (Game Game, Dictionary<string, List<Achievement>> GroupedAchievements) GetAchievementsPageData(int gameId, string sortOrder)
         {
-            var selectedGame = _context.Games
+            var selectedGame = _context.Games.AsNoTracking()
                 .Include(g => g.Achievements).ThenInclude(a => a.TrophyTier)
                 .Include(g => g.Achievements).ThenInclude(a => a.AchievementTags).ThenInclude(at => at.Tag)
                 .FirstOrDefault(g => g.Id == gameId);
@@ -116,7 +116,7 @@ namespace AchievementTracker.Services
         //Rehber Sayfası Getirme
         public Game GetGuidePageData(int gameId)
         {
-            var game = _context.Games
+            var game = _context.Games.AsNoTracking()
                 .Include(g => g.Achievements).ThenInclude(a => a.TrophyTier)
                 .FirstOrDefault(g => g.Id == gameId);
 

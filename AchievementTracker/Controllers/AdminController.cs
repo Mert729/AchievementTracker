@@ -22,6 +22,7 @@ namespace AchievementTracker.Controllers
             return View();
         }
 
+        [ValidateAntiForgeryToken]
         // POST: Admin/AddGame (Butona basıldığında çalışır)
         [HttpPost]
         public ActionResult AddGame(Game newGame)
@@ -56,7 +57,9 @@ namespace AchievementTracker.Controllers
             return View(game);
         }
 
+
         // POST: Admin/Edit (Formda 'Kaydet'e basılınca güncel verileri veritabanına yazar)
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public ActionResult EditGame(Game updatedGame)
         {
@@ -85,6 +88,10 @@ namespace AchievementTracker.Controllers
                     // İşlem bitince ana sayfaya dön
                     return RedirectToAction("Index", "Home");
                 }
+                if (gameInDb == null)
+                {
+                    return NotFound();
+                }
             }
             return View(updatedGame);
         }
@@ -105,6 +112,7 @@ namespace AchievementTracker.Controllers
             return View(game);
         }
 
+        [ValidateAntiForgeryToken]
         [HttpPost, ActionName("DeleteGame")] // Butona basıldığında burası tetiklenir
         public IActionResult DeleteConfirmed(int id)
         {
@@ -119,6 +127,7 @@ namespace AchievementTracker.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public IActionResult AddAchievement(Achievement newAchievement)
         {
@@ -147,6 +156,7 @@ namespace AchievementTracker.Controllers
             return View(newAchievement);
         }
 
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public IActionResult SetLanguage(string culture, string returnUrl)
         {

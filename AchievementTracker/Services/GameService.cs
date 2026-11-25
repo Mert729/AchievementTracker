@@ -14,7 +14,7 @@ namespace AchievementTracker.Services
 
         public List<Game> GetGames(string searchString)
         {
-            var games = _context.Games.Include(g => g.Achievements).OrderBy(g => g.Name).AsQueryable();
+            var games = _context.Games.AsNoTracking().Include(g => g.Achievements).OrderBy(g => g.Name).AsQueryable();
 
             if (!string.IsNullOrEmpty(searchString))
                 games = games.Where(g => g.Name.Contains(searchString));
@@ -24,7 +24,7 @@ namespace AchievementTracker.Services
 
         public List<Game> GetCompletedGames(string searchString)
         {
-            var completedGames = _context.Games.Include(g => g.Achievements)
+            var completedGames = _context.Games.AsNoTracking().Include(g => g.Achievements)
                 .Where(g => g.Achievements.Any() && g.Achievements.All(a => a.IsCompleted))
                 .OrderBy(g => g.Name).AsQueryable();
 
@@ -36,7 +36,7 @@ namespace AchievementTracker.Services
 
         public List<Game> GetHundredList(string searchString)
         {
-            var games = _context.Games.Include(g => g.Achievements)
+            var games = _context.Games.AsNoTracking().Include(g => g.Achievements)
                 .Where(g => g.IsFavorite)
                 .OrderBy(g => g.Name).AsQueryable();
 
